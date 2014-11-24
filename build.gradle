@@ -1,0 +1,44 @@
+buildscript {
+    repositories {
+        maven { url "http://repo.spring.io/libs-release" }
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.1.7.RELEASE")
+    }
+}
+
+apply plugin: 'groovy'
+apply plugin: 'spring-boot'
+
+bootRepackage {
+    mainClass = 'ms.vanity.news.Application'
+}
+
+jar {
+    baseName = 'vanity-ms-news'
+    version = '0.1.0'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "http://repo.spring.io/libs-release" }
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.3.7'
+    compile("org.springframework.boot:spring-boot-starter-data-jpa")
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.postgresql:postgresql:9.3-1102-jdbc41")
+    compile('com.netflix.hystrix:hystrix-core:1.3.18')
+    compile('com.jcabi:jcabi-http:1.9.1')
+    compile('com.sun.jersey:jersey-core:1.18.1')
+    compile('com.sun.jersey:jersey-client:1.18.1')
+    compile('com.google.code.gson:gson:2.3')
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.11'
+}
