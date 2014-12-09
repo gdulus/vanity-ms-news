@@ -59,6 +59,10 @@ class Tag {
         this.lastUpdated = new Date();
     }
 
+    @JsonIgnore
+    public boolean searchable() {
+        root && status in TagStatus.OPEN_STATUSES
+    }
 
 }
 

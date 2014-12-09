@@ -7,5 +7,7 @@ public enum TagStatus {
     PROMOTED,
     SPAM
 
+    public static final List<TagStatus> OPEN_STATUSES = [PUBLISHED, PROMOTED].asImmutable()
+
 }
 

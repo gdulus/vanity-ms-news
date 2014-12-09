@@ -44,7 +44,6 @@ class Article {
     @NotNull
     @NotBlank
     @org.hibernate.validator.constraints.URL
-    @JsonIgnore
     String url
 
     @NotNull
@@ -77,7 +76,7 @@ class Article {
     }
 
     public Collection<Tag> getRootTags() {
-        tags.findAll { it.root }
+        tags.findAll { it.searchable() }
     }
 
     public String getSourceName() {

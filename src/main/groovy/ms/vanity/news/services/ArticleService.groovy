@@ -7,6 +7,7 @@ import ms.vanity.news.domains.Popularity
 import ms.vanity.news.repositories.ArticleRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
@@ -23,8 +24,8 @@ class ArticleService {
     private String articlesPopularityUrl
 
     @Transactional(readOnly = true)
-    public List<Article> getNewest(final Integer max) {
-        return articleRepository.findAll(new PageRequest(0, max, Sort.Direction.DESC, 'dateCreated')).content
+    public Page<Article> getNewest(final int page, final Integer size) {
+        return articleRepository.findAll(new PageRequest(page, size, Sort.Direction.DESC, 'dateCreated'))
     }
 
     @Transactional(readOnly = true)
