@@ -6,9 +6,9 @@ class TagPopularity {
 
     final Tag tag
 
-    final Integer rank
+    final Long rank
 
-    TagPopularity(Tag tag, Integer rank, Integer maxRank) {
+    TagPopularity(Tag tag, Long rank, Long maxRank) {
         this.tag = tag
         this.rank = Math.floor(MAX_SCALE * (rank / maxRank))
     }

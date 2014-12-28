@@ -1,9 +1,10 @@
 package ms.vanity.news.controllers
 
 import ms.vanity.news.domains.Article
+import ms.vanity.news.dto.PageableResult
 import ms.vanity.news.services.ArticleService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Page
+import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -18,13 +19,16 @@ class ArticleController {
     private ArticleService articleService
 
     @RequestMapping(value = "/newest", method = GET)
-    Page<Article> getNewest(@RequestParam final Integer page, @RequestParam final Integer size) {
+    PageableResult<Article> getNewest(@RequestParam final Integer page,
+                                      @RequestParam final Integer size) {
         return articleService.getNewest(page, size)
     }
 
     @RequestMapping(value = "/popular", method = GET)
-    List<Article> getPopular(@RequestParam final Integer dateOffset, @RequestParam final Integer max) {
-        return articleService.getPopular(dateOffset, max)
+    PageableResult getPopular(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) final Date from,
+                              @RequestParam final Integer page,
+                              @RequestParam final Integer size) {
+        return articleService.getPopular(from, page, size)
     }
 
 }

@@ -3,7 +3,8 @@ package ms.vanity.news.services
 import groovy.util.logging.Slf4j
 import ms.vanity.news.commands.PopularityCommand
 import ms.vanity.news.domains.Article
-import ms.vanity.news.domains.Popularity
+import ms.vanity.news.dto.PageableResult
+import ms.vanity.news.dto.RankedEntity
 import ms.vanity.news.repositories.ArticleRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -24,14 +25,16 @@ class ArticleService {
     private String articlesPopularityUrl
 
     @Transactional(readOnly = true)
-    public Page<Article> getNewest(final int page, final Integer size) {
-        return articleRepository.findAll(new PageRequest(page, size, Sort.Direction.DESC, 'dateCreated'))
+    public PageableResult<Article> getNewest(final int page, final Integer size) {
+        Page<Article> result = articleRepository.findAll(new PageRequest(page, size, Sort.Direction.DESC, 'dateCreated'))
+        return new PageableResult(total: result.totalElements, page: result.content)
     }
 
     @Transactional(readOnly = true)
-    public List<Article> getPopular(final Integer dateOffset, final Integer max) {
-        List<Popularity> popularities = new PopularityCommand(articlesPopularityUrl, dateOffset, max).execute()
-        articleRepository.findAll(popularities*.id) as List
+    public PageableResult<Article> getPopular(final Date from, final Integer page, final Integer size) {
+        PageableResult<RankedEntity> popularities = new PopularityCommand(articlesPopularityUrl, from, page, size).execute()
+        List<Article> articles = articleRepository.findAll(popularities.page*.id) as List
+        new PageableResult(total: popularities.total, page: articles)
     }
 
 }

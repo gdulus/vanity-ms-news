@@ -6,42 +6,52 @@ import com.jcabi.http.Request
 import com.jcabi.http.request.JdkRequest
 import com.netflix.hystrix.HystrixCommand
 import com.netflix.hystrix.HystrixCommandGroupKey
-import ms.vanity.news.domains.Popularity
+import groovy.util.logging.Slf4j
+import ms.vanity.news.dto.PageableResult
+import ms.vanity.news.dto.RankedEntity
 
 import java.lang.reflect.Type
 
-public class PopularityCommand extends HystrixCommand<List<Popularity>> {
+@Slf4j
+public class PopularityCommand extends HystrixCommand<PageableResult<RankedEntity>> {
+
+    private static final PageableResult<RankedEntity> EMPTY = new PageableResult<>(total: 0, page: Collections.emptyList())
 
     private final String url
 
-    private final int dateOffset
+    private final Date from
 
-    private final int max
+    private final Integer page
 
-    public PopularityCommand(final String url, final int dateOffset, final int max) {
+    private final Integer size
+
+    public PopularityCommand(final String url, final Date from, final Integer page, final Integer size) {
         super(HystrixCommandGroupKey.Factory.asKey("ms.news.popularity"));
         this.url = url
-        this.dateOffset = dateOffset
-        this.max = max
+        this.from = from
+        this.page = page
+        this.size = size
     }
 
     @Override
-    protected List<Popularity> run() {
+    protected PageableResult run() {
         String body = new JdkRequest(url)
             .uri()
-            .queryParam('timestamp', (new Date() - dateOffset).time)
-            .queryParam('max', max)
+            .queryParam('from', from.format('yyyy-MM-dd'))
+            .queryParam('page', page)
+            .queryParam('size', size)
             .back()
             .method(Request.GET)
             .fetch().body()
 
-        Type listType = new TypeToken<ArrayList<Popularity>>() {}.getType();
+        Type listType = new TypeToken<PageableResult<RankedEntity>>() {}.getType();
         return new Gson().fromJson(body, listType)
     }
 
     @Override
-    protected List<Popularity> getFallback() {
-        return Collections.emptyList()
+    protected PageableResult getFallback() {
+        log.error("Error executing call.", this.failedExecutionException)
+        return EMPTY
     }
 
 }
